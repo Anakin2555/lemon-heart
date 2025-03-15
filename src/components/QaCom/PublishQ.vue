@@ -11,7 +11,8 @@
         <div id="pubtext">发布</div>
       </div>
       <RelativeThing id="relative" :block1='block1' :block2='block2' :block3='block3' :block4='block4' :url2='url2'
-        :url3='url3' :url4='url4'></RelativeThing>
+        :url3='url3' :url4='url4'>
+      </RelativeThing>
     </div>
   </div>
 </template>
@@ -99,7 +100,7 @@
     top: 180px;
     left: 260px;
     color: rgba(97, 97, 97, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 36px;
     line-height: 150%;
   }
@@ -113,7 +114,7 @@
     box-sizing: border-box;
     background: rgba(255, 255, 255, 1);
     color: rgba(130, 130, 130, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 18px;
     line-height: 150%;
   }
@@ -127,7 +128,7 @@
     box-sizing: border-box;
     background: rgba(255, 255, 255, 1);
     color: rgba(130, 130, 130, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 18px;
     line-height: 150%;
   }
@@ -142,7 +143,7 @@
     border: 0.6px solid rgba(0, 0, 0, 1);
     box-sizing: border-box;
     color: rgba(71, 71, 71, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 18px;
     line-height: 150%;
   }
@@ -166,7 +167,7 @@
     background: rgba(51, 51, 51, 1);
     box-sizing: border-box;
     color: rgba(255, 255, 255, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 18px;
     line-height: 150%;
   }

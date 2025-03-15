@@ -1,10 +1,20 @@
 <template>
     <div id="listContainer">
-        <div id="listTitle">{{listTitle}}</div>
-        <label><input type="radio" :name="testQ" value='0' @change='sendRadioVal' v-model='checkedValue'></label><span class="select">符合</span>
-        <label><input type="radio" :name="testQ" value='1' @change='sendRadioVal' v-model='checkedValue'></label><span class="select">大部分符合</span>
-        <label><input type="radio" :name="testQ" value='2' @change='sendRadioVal' v-model='checkedValue'></label><span class="select">有时不符合</span>
-        <label><input type="radio" :name="testQ" value='3' @change='sendRadioVal' v-model='checkedValue'></label><span class="select">不符合</span>
+        <div id="listTitle">{{ listTitle }}</div>
+        <label 
+            v-for="(option, index) in options" 
+            :key="index" 
+            class="radio-label"
+        >
+            <input 
+                type="radio" 
+                :name="testQ" 
+                :value="option.value" 
+                @change="sendRadioVal" 
+                v-model="checkedValue"
+            >
+            <span class="select">{{ option.label }}</span>
+        </label>
     </div>
 </template>
 
@@ -12,17 +22,34 @@
     export default {
         name: 'TestList',
         props: {
-            listTitle: '',
-            testQ:'',
-        },
-        data(){
-            return{
-                checkedValue:'1',
+            listTitle: {
+                type: String,
+                required: true
+            },
+            testQ: {
+                type: String,
+                required: true
+            },
+            checkedValue: {
+                type: String
             }
         },
-        methods:{
-            sendRadioVal(){
-                this.$emit('getVal',this);
+        data() {
+            return {
+                options: [
+                    { value: '0', label: '符合' },
+                    { value: '1', label: '大部分符合' },
+                    { value: '2', label: '有时不符合' },
+                    { value: '3', label: '不符合' }
+                ]
+            }
+        },
+        methods: {
+            sendRadioVal() {
+                this.$emit('getVal', {
+                    testQ: this.testQ,
+                    checkedValue: this.checkedValue
+                });
             }
         }
     }
@@ -35,7 +62,7 @@
         height: 216px;
         position: relative;
         color: rgba(71, 71, 71, 1);
-        font-family: PingFang SC;
+        font-family: PingFang-Regular;
         font-size: 15px;
     }
 
@@ -60,4 +87,10 @@
         width: 50px;
         left: -65px;
     }
+
+    .radio-label {
+        cursor: pointer;
+    }
+
+    
 </style>

@@ -1,4 +1,8 @@
-module.exports={
+const path = require('path')
+const CompressionPlugin = require('compression-webpack-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+
+module.exports = {
     css: {
         extract: false,//false表示开发环境,true表示生成环境
         sourceMap: false,
@@ -24,5 +28,67 @@ module.exports={
             ]
           }
         }
-      }    
+      },
+  // 生产环境不生成 sourceMap
+  productionSourceMap: false,
+
+  configureWebpack: config => {
+    if (process.env.NODE_ENV === 'production') {
+      // 生产环境优化配置
+      return {
+        plugins: [
+          // gzip 压缩
+          new CompressionPlugin({
+            algorithm: 'gzip',
+            test: /\.(js|css)$/,
+            threshold: 10240,
+            minRatio: 0.8
+          }),
+          // 打包分析
+          new BundleAnalyzerPlugin()
+        ],
+        optimization: {
+          // 代码分割配置
+          splitChains: {
+            chunks: 'all',
+            cacheGroups: {
+              libs: {
+                name: 'chunk-libs',
+                test: /[\\/]node_modules[\\/]/,
+                priority: 10,
+                chunks: 'initial'
+              },
+              elementUI: {
+                name: 'chunk-elementUI',
+                priority: 20,
+                test: /[\\/]node_modules[\\/]_?element-ui(.*)/
+              },
+              commons: {
+                name: 'chunk-commons',
+                test: path.resolve(__dirname, 'src/components'),
+                minChunks: 2,
+                priority: 5,
+                reuseExistingChunk: true
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  chainWebpack: config => {
+    // // 移除 prefetch 插件
+    // config.plugins.delete('prefetch')
+    
+    // // 图片压缩
+    // config.module
+    //   .rule('images')
+    //   .use('image-webpack-loader')
+    //   .loader('image-webpack-loader')
+    //   .options({
+    //     bypassOnDebug: true
+    //   })
+    //   .end()
+  }
 }

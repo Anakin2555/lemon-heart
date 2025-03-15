@@ -11,7 +11,7 @@
     </div> -->
     <div id="listsContainer">
       <div v-for='item in listArr' :key="item.index">
-        <TestList :listTitle='item.listTitle' :testQ='item.testQ' @getVal='getVal'></TestList>
+        <TestList :listTitle='item.listTitle' :testQ='item.testQ' @getVal='getVal' :checkedValue='item.checkedValue'></TestList>
       </div>
     </div>
     <div class="hoverIt">
@@ -19,12 +19,12 @@
           查看分析
         </div>
     </div>
-    <Foot id="test1Foot"></Foot>
   </div>
 </template>
 
 <script>
   import TestList from '@/components/TestCom/TestList.vue'
+  import cookie from '@/utils/cookie.js'
   export default {
     data() {
       return {
@@ -194,49 +194,71 @@
             listTitle: '40.我希望成为领导者而不是被领导者',
             testQ: 'q40',
           },
-        ],
+        ].map(item => ({
+          ...item,
+          checkedValue: null
+        })),
       }
+    },
+    created(){
+      this.listArr= JSON.parse(sessionStorage.getItem('listArr'))||this.listArr;
     },
     methods:{
       getVal(val){
         // console.log(val.checkedValue);
         // console.log(val.testQ);
-        if(val.testQ=='q1'||val.testQ=='q6'||val.testQ=='q11'||val.testQ=='q16'||val.testQ=='q21'||val.testQ=='q26'||val.testQ=='q31'){
-          this.result1A += parseInt(val.checkedValue);
-        }else if(val.testQ=='q2'||val.testQ=='q7'||val.testQ=='q12'||val.testQ=='q17'||val.testQ=='q22'||val.testQ=='q27'||val.testQ=='q37'){
-          this.result1B += parseInt(val.checkedValue);
-        }else if(val.testQ=='q3'||val.testQ=='q23'||val.testQ=='q28'||val.testQ=='q33'||val.testQ=='q38'){
-          this.result1C += parseInt(val.checkedValue);
-        }else if(val.testQ=='q4'||val.testQ=='q9'||val.testQ=='q14'||val.testQ=='q19'||val.testQ=='q24'||val.testQ=='q29'||val.testQ=='q34'||val.testQ=='q39'){
-          this.result1D += parseInt(val.checkedValue);
-        }else if(val.testQ=='q10'||val.testQ=='q20'||val.testQ=='q25'||val.testQ=='q30'||val.testQ=='q35'||val.testQ=='q40'){
-          this.result1E += parseInt(val.checkedValue);
-        }else if(val.testQ=='q36'){
-          this.result1A += 5-parseInt(val.checkedValue);
-        }else if(val.testQ=='q32'){
-          this.result1B += 5-parseInt(val.checkedValue);
-        }else if(val.testQ=='q8'||val.testQ=='q13'||val.testQ=='q18'){
-          this.result1C += 5-parseInt(val.checkedValue);
-        }else if(val.testQ=='q5'||val.testQ=='q15'){
-          this.result1E += 5-parseInt(val.checkedValue);
-        }
-        console.log(this.result1A);
-        console.log(this.result1B);
-        console.log(this.result1C);
-        console.log(this.result1D);
-        console.log(this.result1E);
+        this.listArr.find(item => item.testQ === val.testQ).checkedValue = val.checkedValue;
+        sessionStorage.setItem('listArr', JSON.stringify(this.listArr));
+        console.log(this.listArr);
       },
       sendResult1(){
-        this.$router.push({
-                        path:'/Test1Result',
-                        query: {
-                            result1A: this.result1A,
-                            result1B: this.result1B,
-                            result1C: this.result1C,
-                            result1D: this.result1D,
-                            result1E: this.result1E,
-                        }
-        });
+        // 检查所有选项是否都已选择
+        if(!this.listArr.every(item=>item.checkedValue)){
+          alert('请选择所有选项');
+          return;
+        }
+
+        // 添加登录检测
+        if(cookie.getCookie('userName')){
+
+          if(val.testQ=='q1'||val.testQ=='q6'||val.testQ=='q11'||val.testQ=='q16'||val.testQ=='q21'||val.testQ=='q26'||val.testQ=='q31'){
+            this.result1A += parseInt(val.checkedValue);
+          }else if(val.testQ=='q2'||val.testQ=='q7'||val.testQ=='q12'||val.testQ=='q17'||val.testQ=='q22'||val.testQ=='q27'||val.testQ=='q37'){
+            this.result1B += parseInt(val.checkedValue);
+          }else if(val.testQ=='q3'||val.testQ=='q23'||val.testQ=='q28'||val.testQ=='q33'||val.testQ=='q38'){
+            this.result1C += parseInt(val.checkedValue);
+          }else if(val.testQ=='q4'||val.testQ=='q9'||val.testQ=='q14'||val.testQ=='q19'||val.testQ=='q24'||val.testQ=='q29'||val.testQ=='q34'||val.testQ=='q39'){
+            this.result1D += parseInt(val.checkedValue);
+          }else if(val.testQ=='q10'||val.testQ=='q20'||val.testQ=='q25'||val.testQ=='q30'||val.testQ=='q35'||val.testQ=='q40'){
+            this.result1E += parseInt(val.checkedValue);
+          }else if(val.testQ=='q36'){
+            this.result1A += 5-parseInt(val.checkedValue);
+          }else if(val.testQ=='q32'){
+            this.result1B += 5-parseInt(val.checkedValue);
+          }else if(val.testQ=='q8'||val.testQ=='q13'||val.testQ=='q18'){
+            this.result1C += 5-parseInt(val.checkedValue);
+          }else if(val.testQ=='q5'||val.testQ=='q15'){
+            this.result1E += 5-parseInt(val.checkedValue);
+          }
+          console.log(this.result1A);
+          console.log(this.result1B);
+          console.log(this.result1C);
+          console.log(this.result1D);
+          console.log(this.result1E);
+        
+          this.$router.push({
+                          path:'/Test1Result',
+                          query: {
+                              result1A: this.result1A,
+                              result1B: this.result1B,
+                              result1C: this.result1C,
+                              result1D: this.result1D,
+                              result1E: this.result1E,
+                          }
+          });
+        }else{
+          alert('请先登录');
+        }
       }
     },
     components: {
@@ -288,7 +310,7 @@
     position: absolute;
     left: 220px;
     color: rgba(71, 71, 71, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 24px;
   }
 
@@ -296,7 +318,7 @@
     position: absolute;
     top: 50px;
     color: rgba(130, 130, 130, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 16px;
     left: 50px;
   }
@@ -330,7 +352,7 @@
     border-radius: 23.5px;
     background: rgba(51, 51, 51, 1);
     color: rgba(255, 255, 255, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 18px;
     top: 250px;
     left: 800px;

@@ -12,8 +12,8 @@
     </div>
     <ToAsk id="toAsk"></ToAsk>
     <RelativeThing id="relative" :block1='block1' :block2='block2' :block3='block3' :block4='block4' :url2='url2'
-      :url3='url3' :url4='url4'></RelativeThing>
-    <Foot id="foot"></Foot>
+      :url3='url3' :url4='url4'>
+    </RelativeThing>
   </div>
 </template>
 
@@ -116,9 +116,9 @@
   #aTitle {
     position: relative;
     left: 262px;
-    top: 100px;
+    top: 200px;
     color: rgba(71, 71, 71, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 36px;
     line-height: 193.265629%;
   }
@@ -126,9 +126,9 @@
   #aNum {
     position: relative;
     left: 450px;
-    top: 55px;
+    top: 155px;
     color: rgba(130, 130, 130, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 24px;
     line-height: 130.265629%;
   }

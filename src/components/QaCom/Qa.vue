@@ -1,3 +1,86 @@
+<script>
+  import request from '@/utils/request.js'
+  import Paging from '@/components/Paging.vue'
+  import QaArticleList from '@/components/QaCom/QaArticleList.vue'
+  import ToAsk from '@/components/QaCom/ToAsk.vue'
+  import DOMPurify from 'dompurify'
+  export default {
+    name: 'Qa',
+    components: {
+      Paging,
+      QaArticleList,
+      ToAsk,
+    },
+
+    data() {
+      return {
+        text: [],
+        qas: [],
+        isReady: false,
+        totalPage:{},
+        pageSize:6,
+        pageNo:1,
+        userInput: '',
+        sanitizedOutput: ''
+      }
+    },
+
+    methods: {
+      getQuestion1() {
+        request({
+          method: 'post',
+          url: '/question/listQuestionByPage',
+          params: {
+            pageNo: Math.floor(Math.random() * 11 + 1),
+          }
+        }).then(({
+          data: res
+        }) => {
+          this.text = [...res.data.records];
+          this.totalPage = res.data.total;
+          console.log(this.totalPage);
+        })
+      },
+      getQuestion2(val) {
+        request({
+          method: 'post',
+          url: '/question/listQuestionByPage',
+          params: {
+            pageNo: val,
+          }
+        }).then(({
+          data: res
+        }) => {
+          this.qas = [...res.data.records];
+          this.totalPage = res.data.total;
+          for (const item of this.qas) {
+            item.questionContent = item.questionContent.slice(0, 80) + "……";
+          }
+        })
+      },
+      changePage(val) {
+        this.pageNo = val;
+        this.getQuestion2(val);
+      },
+      sanitizeInput() {
+        this.sanitizedOutput = DOMPurify.sanitize(this.userInput);
+      },
+      submit() {
+        console.log('用户输入:', this.sanitizedOutput);
+      }
+    },
+
+    created() {
+      this.getQuestion1();
+      this.getQuestion2(1);
+    },
+
+  }
+</script>
+
+
+
+
 <template>
   <div>
     <div class="container">
@@ -44,94 +127,45 @@
     </div>
     <Paging id="pages" @changePage='changePage' :totalPage='totalPage' :pageSize='pageSize' :pageNo='pageNo'></Paging>
     <Foot id="foot"></Foot>
+    <input 
+      type="text" 
+      v-model="userInput" 
+      @input="sanitizeInput" 
+      placeholder="请输入内容"
+    />
+    <button @click="submit">提交</button>
+    <div v-if="sanitizedOutput">
+      <h3>输出内容:</h3>
+      <div v-html="sanitizedOutput"></div>
+    </div>
   </div>
 
 </template>
 
-<script>
-  import request from '@/utils/request.js'
-  import Paging from '@/components/Paging.vue'
-  import QaArticleList from '@/components/QaCom/QaArticleList.vue'
-  import ToAsk from '@/components/QaCom/ToAsk.vue'
-  export default {
-    name: 'Qa',
-    components: {
-      Paging,
-      QaArticleList,
-      ToAsk,
-    },
 
-    data() {
-      return {
-        text: [],
-        qas: [],
-        isReady: false,
-        totalPage:{},
-        pageSize:6,
-        pageNo:1,
-      }
-    },
-
-    methods: {
-      getQuestion1() {
-        request({
-          method: 'post',
-          url: '/question/listQuestionByPage',
-          params: {
-            pageNo: 7,
-          }
-        }).then(({
-          data: res
-        }) => {
-          this.$set(this, 'text', res.data.records);
-          this.totalPage = res.data.total;
-          console.log(this.totalPage);
-        })
-      },
-      getQuestion2(val) {
-        request({
-          method: 'post',
-          url: '/question/listQuestionByPage',
-          params: {
-            pageNo: val,
-          }
-        }).then(({
-          data: res
-        }) => {
-          this.$set(this, 'qas', res.data.records);
-          this.totalPage = res.data.total;
-          for (const item of this.qas) {
-            item.questionContent = item.questionContent.slice(0, 80) + "……";
-          }
-        })
-      },
-      changePage(val) {
-        this.pageNo = val;
-        this.getQuestion2(val);
-      }
-    },
-
-    created() {
-      this.getQuestion1();
-      this.getQuestion2(1);
-    },
-
-  }
-</script>
 
 <style lang="less" scoped>
-  .container {
-    width: 1920px;
-  }
+@width-full: 1920px;
+@height-top1: 383px;
+@height-top2: 550px;
+@color-white: #FFFFFF;
+@color-light: rgb(177, 243, 243);
+@color-dark: rgba(71, 71, 71, 1);
+@border-radius: 100px;
+@font-family-pingfang: PingFang-Regular;
+@font-family-fz: FZBaoSong-Z04S;
 
-  .top1 {
-    width: 1920px;
-    height: 383px;
-    background: #FFFFFF;
-    position: relative;
-  }
+.container {
+  width: @width-full;
+}
 
-  .top1 img {
+.top1 {
+  width: @width-full;
+  height: @height-top1;
+  background: @color-white;
+  position: relative;
+
+  img {
     height: 100%;
     width: 100%;
   }
@@ -142,17 +176,18 @@
     left: 260px;
     width: 108px;
     height: 40px;
-    border-radius: 100px;
-    border: 0.6px solid rgba(0, 0, 0, 1);
+    border-radius: @border-radius;
+    border: 1px solid rgba(0, 0, 0, 1);
     box-sizing: border-box;
-    background: rgba(255, 255, 255, 1);
-    color: rgba(71, 71, 71, 1);
-    font-family: PingFang SC;
+    background: @color-white;
+    color: @color-dark;
+    font-family: @font-family-pingfang;
     font-size: 18px;
     line-height: 130.265629%;
     text-align: center;
     padding-top: 7px;
   }
+}
 
   .top2 {
     width: 1920px;
@@ -173,8 +208,8 @@
     left: 260px;
     width: 180px;
     height: 47px;
-    color: rgba(71, 71, 71, 1);
-    font-family: PingFang SC;
+    color: @color-dark;
+    font-family: @font-family-pingfang;
     font-size: 36px;
     line-height: 130.265629%;
   }
@@ -276,34 +311,34 @@
     width: 180px;
     height: 47px;
     color: rgba(71, 71, 71, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 36px;
     line-height: 130.265629%;
   }
 
-  #qaContainer {
-    height: 1400px;
-    position: relative;
-    top: 168px;
-    left: 262px;
-    width: 910px;
-  }
+#qaContainer {
+  height: 1400px;
+  position: relative;
+  top: 168px;
+  left: 262px;
+  width: 910px;
+}
 
-  #pages {
-    position: relative;
-    top: 249px;
-    left: 250px;
-    width: 500px;
-  }
+#pages {
+  position: relative;
+  top: 249px;
+  left: 250px;
+  width: 500px;
+}
 
-  #foot {
-    position: relative;
-    top: 400px;
-  }
+#foot {
+  position: relative;
+  top: 400px;
+}
 
-  #toAsk {
-    position: sticky;
-    margin-left: 1400px;
-    top: 300px;
-  }
+#toAsk {
+  position: sticky;
+  margin-left: 1400px;
+  top: 300px;
+}
 </style>

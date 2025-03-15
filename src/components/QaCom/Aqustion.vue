@@ -5,15 +5,18 @@
     <div id="name">{{name}}</div>
     <div id="date">{{date}}</div>
     <div id="text">{{text}}</div>
-    <div class="hoverIt">
-      <div id="like" @click="likeIt" :style="{'background':bgc1}">
-        <img id="img2" :src="img2Src">
-        <div id="likeNum" :style="{'color':color1}">{{likeNum}}</div>
+    <div id="buttonContainer">
+      <div class="hoverIt">
+        <div id="like" @click="debouncedLikeIt" :style="{'background':bgc1}">
+          <img id="img2" :src="img2Src">
+          <div id="likeNum" :style="{'color':color1}">{{likeNum}}</div>
+        </div>
+      </div>
+      <div class="hoverIt" v-if="!isAnsing" @click="ansing">
+        <div id="toAns">写回答</div>
       </div>
     </div>
-    <div class="hoverIt" v-if="!isAnsing" @click="ansing">
-      <div id="toAns">写回答</div>
-    </div>
+    
     <div id="ansContainer" v-if="isAnsing">
       <textarea id="inp" placeholder="请输入你的看法，字数1000字以内" v-model="ansContent"></textarea>
       <div class="hoverIt">
@@ -37,6 +40,7 @@
         img2Src: like1,
         bgc1: 'rgba(255, 255, 255, 1)',
         color1: 'rgba(71, 71, 71, 1)',
+        debounceTimer: null
       }
     },
     props: {
@@ -48,6 +52,16 @@
       name: {},
     },
     methods: {
+      debounce(func, delay) {
+        return (...args) => {
+          if (this.debounceTimer) {
+            clearTimeout(this.debounceTimer);
+          }
+          this.debounceTimer = setTimeout(() => {
+            func.apply(this, args);
+          }, delay);
+        };
+      },
       likeIt() {
         if (!this.cookie.getCookie('userName')) {
           alert('请先登录')
@@ -68,6 +82,9 @@
         } else {
           alert('你已经点过赞了噢~')
         }
+      },
+      debouncedLikeIt() {
+        this.debounce(this.likeIt, 200)();
       },
       ansing() {
         this.isAnsing = true;
@@ -96,14 +113,19 @@
         })
       },
     },
+    created() {
+      this.likeIt = this.debounce(this.likeIt, 1000);
+    }
   }
 </script>
 
 <style lang="less" scoped>
   #container {
     width: 1020px;
-    height: 700px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    padding-top: 100px;
   }
 
   #title {
@@ -128,7 +150,7 @@
     top: 62px;
     left: -10px;
     color: rgba(97, 97, 97, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 18px;
     line-height: 130.265629%;
   }
@@ -138,39 +160,46 @@
     top: 60px;
     left: 125px;
     color: rgba(97, 97, 97, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 14px;
     line-height: 193.265629%;
   }
 
   #text {
-    position: absolute;
-    top: 120px;
     color: rgba(97, 97, 97, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 21px;
     line-height: 193.265629%;
     width: 1020px;
   }
 
   #like {
-    position: absolute;
-    top: 450px;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:6px;
     width: 130px;
     height: 40px;
     border-radius: 23.5px;
     border: 0.6px solid rgba(0, 0, 0, 1);
     box-sizing: border-box;
   }
-
+  #buttonContainer{
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    justify-content: start;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
   .hoverIt :hover {
     cursor: pointer;
   }
 
   #toAns {
-    position: absolute;
-    top: 450px;
-    left: 160px;
+    
     width: 130px;
     height: 40px;
     border-radius: 23.5px;
@@ -178,7 +207,7 @@
     box-sizing: border-box;
     background: rgba(255, 255, 255, 1);
     text-align: center;
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 18px;
     line-height: 150%;
     padding-top: 5px;
@@ -191,25 +220,16 @@
   }
 
   #img2 {
-    position: absolute;
-    top: 8px;
-    left: 41px;
     width: 24px;
     height: 24px;
   }
 
   #likeNum {
-    position: absolute;
-    top: 6px;
-    left: 77px;
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 18px;
-    line-height: 150%;
   }
 
   #ansContainer {
-    position: absolute;
-    top: 520px;
     width: 1030px;
     height: 260px;
   }
@@ -218,7 +238,7 @@
     width: 1030px;
     height: 200px;
     color: rgba(130, 130, 130, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 18px;
     line-height: 150%;
     margin-bottom: 10px;
@@ -234,7 +254,7 @@
     box-sizing: border-box;
     background: rgba(255, 255, 255, 1);
     color: rgba(71, 71, 71, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 18px;
     line-height: 150%;
     text-align: center;
@@ -250,7 +270,7 @@
     border-radius: 23.5px;
     background: rgba(51, 51, 51, 1);
     color: rgba(255, 255, 255, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 18px;
     line-height: 150%;
     text-align: center;

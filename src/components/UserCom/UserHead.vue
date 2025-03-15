@@ -1,13 +1,19 @@
 <template>
   <div id="infor">
     <img src="@/assets/pictures/infoHead.png">
-    <div id="userName">{{this.cookie.getCookie('userName')}}</div>
+    <div id="userName">{{ userName }}</div>
   </div>
 </template>
 
 <script>
   export default {
     name: 'UserHead',
+    props: {
+      userName: {
+        type: String,
+        default: ''
+      }
+    }
   }
 </script>
 
@@ -34,9 +40,10 @@
   #userName {
     position: absolute;
     color: rgba(71, 71, 71, 1);
-    font-family: PingFang SC;
-    font-size: 18px;
+    font-family: PingFang-Regular;
+    font-size: 17px;
     top: -20px;
     left: 50px;
+    
   }
 </style>

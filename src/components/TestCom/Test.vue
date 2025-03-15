@@ -1,7 +1,7 @@
 <template>
   <div id="testContainer">
     <div id="top">
-      <img src="@/assets/pictures/test.gif" id="topImg">
+      <img class="upimage" src="../../assets/pictures/心理测试背景.gif" alt="" />
     </div>
     <div id="banner">
       <div id="test1">
@@ -25,7 +25,6 @@
       <div id="about2">柠檬心理提供多方面的测试来使你更了解你自己</div>
       <div id="about3">测试完成后会提供详细分析和有效的建议</div>
     </div>
-    <Foot id="testFoot"></Foot>
   </div>
 </template>
 
@@ -64,6 +63,16 @@
 </script>
 
 <style lang="less" scoped>
+  .upimage {
+    height: 100%;
+    width: 100%;
+  }
+  button:hover span {
+    color: white;
+  }
+  button:hover {
+    background-color: black;
+  }
   #testContainer{
     width: 1920px;
     overflow: hidden;
@@ -111,7 +120,7 @@
     position: absolute;
     left: 682px;
     top: 105px;
-    font-size: 18px;
+    font-size: 22px;
     color: rgba(0, 0, 0, 1);
     font-family: FZBaoSong-Z04S;
   }
@@ -123,9 +132,9 @@
     width: 730px;
     height: 76px;
     text-align: center;
-    color: rgba(0, 0, 0, 1);
-    font-family: PingFang-ExtraLight-2;
-    font-size: 24px;
+    color: #000000;
+    font-family: FZBaoSong-Z04S;
+    font-size: 22px;
     line-height: 156.765628%;
   }
 
@@ -214,7 +223,7 @@
     width: 510px;
     height: 34px;
     color: rgba(0, 0, 0, 1);
-    font-family: PingFang-ExtraLight-2;
+    font-family: FZBaoSong-Z04S;
     font-size: 24px;
   }
 
@@ -225,7 +234,7 @@
     width: 440px;
     height: 34px;
     color: rgba(0, 0, 0, 1);
-    font-family: PingFang-ExtraLight-2;
+    font-family: FZBaoSong-Z04S;
     font-size: 24px;
   }
 

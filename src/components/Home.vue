@@ -5,8 +5,8 @@
         </div>
         <div class="Catalogue">
             <div class="data">
-                <div class="month">10<span class="month1">月</span></div>
-                <div class="day">20<span class="day1">日</span></div>
+                <div class="month">{{month}}<span class="month1">月</span></div>
+                <div class="day">{{day }}<span class="day1">日</span></div>
                 <img src="@/assets/pictures/data.png">
             </div>
             <div class="text1">生活没有你想的那么糟</div>
@@ -78,6 +78,14 @@
 <script>
     export default {
         name: 'Home',
+        data(){
+            const today = new Date()
+            const month = today.getMonth() + 1 // JavaScript的月份是从0开始的，所以需要加1
+            const day = today.getDate()
+            return{
+                month,day,
+            }
+        }
     }
 </script>
 <style lang="less" scoped>
@@ -175,7 +183,7 @@
 
     .words a {
         color: rgba(71, 71, 71, 1);
-        font-family: PingFang SC;
+        font-family: PingFang-Regular;
         font-size: 24px;
         line-height: 130.765629%;
         text-decoration: underline;
@@ -230,22 +238,22 @@
         left: 80px;
         top: 9px;
         color: rgba(71, 71, 71, 1);
-        font-family: PingFang SC;
+        font-family: PingFang-Regular;
         font-size: 36px;
-        text-decoration: underline;
+        border-bottom: #000000 1px solid;
     }
 
     .line1 {
         position: absolute;
         background-color: black;
         height: 200px;
-        width: 1px;
+        width: 0.6px;
         left: 240px;
     }
 
     .test1 {
         position: absolute;
-        left: 250px;
+        left: 270px;
         top: 0px;
         color: rgba(0, 0, 0, 1);
         font-family: FZBaoSong-Z04S;

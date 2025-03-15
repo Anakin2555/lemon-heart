@@ -1,46 +1,3 @@
-<template>
-  <div id="containers">
-    <ArticleTop id="top"></ArticleTop>
-    <div id="toAsk">
-      <router-link to="/PublishQ">
-        <div>去提问></div>
-      </router-link>
-    </div>
-    <RelativeThing id="relative1" :block1='block1' :block2='block2' :block3='block3' :block4='block4'
-      :url2='urlA2' :url3='urlA3' :url4='urlA4'></RelativeThing>
-    <!-- <RelativeThing id="relative2" :block1='block5' :block2='block6' :block4='block7'
-      :url2='urlB2' :url4='urlB4'></RelativeThing> -->
-    <!-- <div id="moreBook">
-      <router-link to='/Book'>
-        <div>更多></div>
-      </router-link>
-    </div> -->
-    <ArticleNav id="ArticleNav" @changeKind='changeKind'></ArticleNav>
-    <div id="ArticleListContainer">
-      <router-link :to="'/Article/'+ item.id" v-for="item in Articles" :key="item.id">
-        <ArticleList :imgSrc='item.passageImg' :title='item.passageTitle' :text="item.passageSmallTitle"
-          :kind='item.passageCategory'></ArticleList>
-      </router-link>
-    </div>
-    <Paging id="pages" :totalPage='totalPage' @changePage='changePage' :pageSize='pageSize' :pageNo='pageNo'></Paging>
-    <div id="testContainer">
-      <div>
-        <img src="@/assets/pictures/Rectangle_25.png" id="img1">
-        <div id="title">心理测试</div>
-      </div>
-      <ToTestBlock id='test1' :urlA='url1' :block1='text1' :block2='text2' :block3='text3'></ToTestBlock>
-      <ToTestBlock id='test2' :urlA='url2' :block1='text4' :block2='text5' :block3='text6'></ToTestBlock>
-      <ToTestBlock id='test3' :urlA='url3' :block1='text7' :block2='text8' :block3='text9'></ToTestBlock>
-      <div id="moreTest">
-        <router-link to='/Test/'>
-          <div>更多心理测试></div>
-        </router-link>
-      </div>
-    </div>
-    <Foot id="foot"></Foot>
-  </div>
-</template>
-
 <script>
   import ArticleTop from '@/components/ArticleCom/ArticleTop.vue';
   import RelativeThing from '@/components/RelativeThing.vue';
@@ -83,6 +40,9 @@
         text7: '抑',
         text8: '郁测试',
         text9: '测测你的抑郁情绪状态',
+        isVisible: true, // 控制元素的可见性
+        scrollThreshold: 1800, // 设置滚动阈值
+        linkText: '去提问 >' // 定义为字符串
       }
     },
     components: {
@@ -98,15 +58,10 @@
         request({
           method: 'post',
           url: '/passage/listAllByPage',
-          params: {
-            pageNo: pageNo
-          }
-        }).then(({
-          data: res
-        }) => {
+          params: { pageNo }
+        }).then(({ data: res }) => {
           this.totalPage = res.data.total;
-          this.$set(this, 'Articles', res.data.records);
-          console.log(this.Articles)
+          this.Articles = [...res.data.records];
           this.kind = 'all';
         })
       },
@@ -121,10 +76,9 @@
           data: res
         }) => {
           this.totalPage = res.data.length; //获取本类型所有文章数
-          this.$set(this, 'Articles', res.data); //将所有文章存入Articles数组
+          this.Articles=[...res.data]
           console.log(this.Articles);
-          this.Articles = this.Articles.slice((this.pageNo - 1) * this.pageSize, this.pageNo * this
-            .pageSize); //根据当前页面(pageNo)，截取要展示的数组
+          this.Articles = this.Articles.slice((this.pageNo - 1) * this.pageSize, this.pageNo * this.pageSize); //根据当前页面(pageNo)，截取要展示的数组
         })
       },
       getThreeArticle() {
@@ -161,13 +115,71 @@
           this.getKindArticle(this.kind)
         }
       },
+      handleScroll() {
+        // 获取当前滚动高度
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        // 根据滚动高度更新可见性
+        this.isVisible = scrollTop < this.scrollThreshold;
+      }
     },
     created() {
       this.getAllArticle(this.pageNo);
       this.getThreeArticle();
     },
+    mounted() {
+      // 获取元素的高度并设置为滚动阈值
+      window.addEventListener('scroll', this.handleScroll);
+    },
+    beforeDestroy() {
+      window.removeEventListener('scroll', this.handleScroll);
+    },
   }
 </script>
+
+
+
+<template>
+  <div id="containers">
+    <ArticleTop id="top"></ArticleTop>
+    <div id="relative1" :style="{ visibility: isVisible ? 'visible' : 'hidden' }">
+      <RelativeThing  :block1='block1' :block2='block2' :block3='block3' :block4='block4'
+        :url2='urlA2' :url3='urlA3' :url4='urlA4' :link='linkText' :tolink='url2'></RelativeThing>
+    </div>
+    
+    <!-- <RelativeThing id="relative2" :block1='block5' :block2='block6' :block4='block7'
+      :url2='urlB2' :url4='urlB4'></RelativeThing> -->
+    <!-- <div id="moreBook">
+      <router-link to='/Book'>
+        <div>更多></div>
+      </router-link>
+    </div> -->
+    <ArticleNav id="ArticleNav" @changeKind='changeKind'></ArticleNav>
+    <div id="ArticleListContainer">
+      <router-link :to="'/Article/'+ item.id" v-for="item in Articles" :key="item.id">
+        <ArticleList :imgSrc='item.passageImg' :title='item.passageTitle' :text="item.passageSmallTitle"
+          :kind='item.passageCategory'></ArticleList>
+      </router-link>
+    </div>
+    <Paging id="pages" :totalPage='totalPage' @changePage='changePage' :pageSize='pageSize' :pageNo='pageNo'></Paging>
+    <div id="testContainer" ref="testContainer">
+      <div>
+        <img src="@/assets/pictures/Rectangle_25.png" id="img1">
+        <div id="title">心理测试</div>
+      </div>
+      <ToTestBlock id='test1' :urlA='url1' :block1='text1' :block2='text2' :block3='text3'></ToTestBlock>
+      <ToTestBlock id='test2' :urlA='url2' :block1='text4' :block2='text5' :block3='text6'></ToTestBlock>
+      <ToTestBlock id='test3' :urlA='url3' :block1='text7' :block2='text8' :block3='text9'></ToTestBlock>
+      <div id="moreTest">
+        <router-link to='/Test/'>
+          <div>更多心理测试></div>
+        </router-link>
+      </div>
+    </div>
+    <Foot id="foot"></Foot>
+  </div>
+</template>
+
+
 
 <style lang="less" scoped>
   #containers{
@@ -182,25 +194,7 @@
     z-index: 99;
   }
 
-
-  #toAsk {
-    position: sticky;
-    top: 90px;
-    left: 1550px;
-    width: 65px;
-    overflow: hidden;
-    z-index: 99;
-  }
-
-  #toAsk :hover {
-    cursor: pointer;
-  }
-
-  #toAsk a {
-    color: rgba(97, 97, 97, 1);
-    font-family: PingFang SC;
-    font-size: 16px;
-  }
+  
 
   /* #relative2 {
     position: sticky;
@@ -223,7 +217,7 @@
 
   #moreBook a {
     color: rgba(97, 97, 97, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 16px;
   } */
 
@@ -275,7 +269,7 @@
     top: 140px;
     left: 900px;
     color: rgba(71, 71, 71, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 36px;
   }
 
@@ -310,7 +304,7 @@
 
   #moreTest a {
     color: rgba(97, 97, 97, 1);
-    font-family: PingFang SC;
+    font-family: PingFang-Regular;
     font-size: 18px;
   }
 
